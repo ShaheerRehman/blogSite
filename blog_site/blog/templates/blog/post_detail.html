@@ -1,0 +1,43 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+    {% if post.published_date %}
+        <p class="postdate">Published on: {{ post.published_date }}</p>
+    {% else %}
+        <p class="postdate">Created on: {{ post.created_date }}</p>
+    {% endif %}
+    <hr>
+    <h3 class="posttitle">{{ post.title }}</h3>
+    <p>Author: {{ post.author }}</p>
+    <hr>
+    <p class="postcontent">{{ post.text|safe|linebreaksbr }}</p>
+    {% if user.is_authenticated %}
+        {% if not post.published_date %}
+            <a title="Publish" class="btn btn-success rightPadBtn" href="{% url 'post_publish' pk=post.pk %}"><span class="material-icons">publish</span></a>
+        {% endif %}
+        <a title="Edit" class="btn btn-warning rightPadBtn" href="{% url 'post_edit' pk=post.pk%}"><span class="material-icons">edit</span></a>
+        <a title="Delete" class="btn btn-danger" href="{% url 'post_remove' pk=post.pk%}"><span class="material-icons">delete</span></a>
+    {% endif %}
+    <div class="container rel">
+        <a class="btn btn-primary btn-comment" href="{% url 'add_comment_to_post' pk=post.pk %}">Add Comment</a>
+    </div>
+    <br>
+    <hr>
+    {% for comment in post.comments.all %}
+{#        <br>#}
+        {% if user.is_authenticated and comment.approved_comment == False %}
+            <p>{{ comment.text|safe|linebreaksbr }}</p>
+            <p>Comment from <strong><em>{{ comment.author }}</em></strong> on {{ comment.created_date|date:'D, N j, Y \a\t g:i:s A' }}</p>
+            <a title="Approve" class="btn btn-success rightPadBtn" href="{% url 'comment_approve' pk=comment.pk%}"><span class="material-icons">publish</span></a>
+            <a title="Delete" class="btn btn-danger" href="{% url 'comment_remove' pk=comment.pk%}"><span class="material-icons">delete</span></a>
+            <hr>
+        {% endif %}
+        {% if comment.approved_comment == True %}
+            <p>{{ comment.text|safe|linebreaksbr }}</p>
+            <p>Comment from <strong><em>{{ comment.author }}</em></strong> on {{ comment.created_date|date:'D, N j, Y \a\t g:i:s A' }}</p>
+            <hr>
+        {% endif %}
+    {% empty %}
+        <br>
+        <h3>No comments!</h3>
+    {% endfor %}
+{% endblock %}

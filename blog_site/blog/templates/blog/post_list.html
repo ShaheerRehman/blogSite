@@ -1,0 +1,26 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+    <div class="centerstage">
+        {% for post in post_list %}
+            <h3 class="loader posttitle"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h3>
+            <p class="postcontent">{{ post.text|safe|linebreaksbr|truncatechars:150 }}</p>
+            <p>Author: {{ post.author }}</p>
+            {% if post.published_date %}
+                <p>Published on: {{ post.published_date|date:"SHORT_DATE_FORMAT" }}</p>
+            {% else %}
+                <p>Created on: {{ post.created_date|date:'SHORT_DATE_FORMAT' }}</p>
+            {% endif %}
+            <a class="loader" href="{% url 'post_detail' pk=post.pk %}">Comments: {{ post.approve_comments.count }}</a>
+            <hr>
+        {% empty %}
+            <h1 class="mainh1">Welcome</h1>
+            <hr>
+            <br>
+            {% if user.is_authenticated %}
+                <h3>No blogs here! Create some blogs by clicking on <a href="{% url 'post_new' %}">New Blog </a> </h3>
+            {% else %}
+                <h3>No Blogs! <a href="{% url 'login' %}">Login</a> to create some New Blogs</h3>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}
